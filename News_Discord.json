@@ -1,0 +1,134 @@
+{
+  "name": "News Discord",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        0
+      ],
+      "id": "12ad1882-1624-41ab-810f-a9cbd4bbf935",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "https://otx.alienvault.com/api/v1/pulses/activity",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "alienVaultApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "c69c7d8e-3722-4a31-af5b-98e6d5e4f222",
+      "name": "AlienVault HTTP Request",
+      "extendsCredential": "alienVaultApi",
+      "credentials": {
+        "alienVaultApi": {
+          "id": "ao4I0j2lniim55he",
+          "name": "AlienVault account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=แปลเป็นไทย และสรุปเนื้อหา จาก 1.{{ $json.results[0].description }} "
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        500,
+        0
+      ],
+      "id": "b7003ff1-49e4-4b8b-bd61-85c31019839a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        520,
+        220
+      ],
+      "id": "816aa903-498b-4c19-a932-63389342f38b",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "bnDGhMPwCxkZpOEg",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "AlienVault HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AlienVault HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        []
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fbdc387e-9532-464e-a121-9fe951502abc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d1a9591adaa4888e9f71e090f5aa21c0801ef409d3f4ec76582b0baf319d7ad"
+  },
+  "id": "wgd7Poo7HozNqkX5",
+  "tags": []
+}

@@ -1,0 +1,161 @@
+{
+  "name": "News Web",
+  "nodes": [
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "https://otx.alienvault.com/api/v1/pulses/activity",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "alienVaultApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "86eea5b4-3b82-4dc7-a61a-35bbf15e1348",
+      "name": "AlienVault HTTP Request",
+      "extendsCredential": "alienVaultApi",
+      "credentials": {
+        "alienVaultApi": {
+          "id": "ao4I0j2lniim55he",
+          "name": "AlienVault account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=translate to thai and summary news this section  {{ $json.results[0].name }} this content {{ $json.results[0].description }}\n\ncut only thai word\nno \"คำแปล (Thai Translation):\"\nno \"\"**สรุปข่าว:**\"\nCut to 3 lines"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        500,
+        0
+      ],
+      "id": "3fd8d3b5-407f-4b06-ad53-75c8964f995a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        520,
+        220
+      ],
+      "id": "70eba19c-07d7-441b-ad5e-58e199580cb5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OIrkg7S5TIAPZCg4",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        0
+      ],
+      "id": "f6ab22fe-c461-40ca-88f6-aaaf75dc528c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "28c3c754-ced0-4cb3-8067-d6923341e354",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bec976ea-a52a-4957-b433-83fbb574a748",
+      "name": "Webhook",
+      "webhookId": "28c3c754-ced0-4cb3-8067-d6923341e354"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AlienVault HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AlienVault HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "568ab141-1a00-438f-8c1e-ca9ad3e0100a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d1a9591adaa4888e9f71e090f5aa21c0801ef409d3f4ec76582b0baf319d7ad"
+  },
+  "id": "s0xB0iEAP24ieWAx",
+  "tags": []
+}

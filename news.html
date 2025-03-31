@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger News Process</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            max-width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        #waiting {
+            display: none;
+            color: #ff9900;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <h2>News Trigger</h2>
+    <button onclick="triggerNews()">Send Trigger</button>
+    <div id="response">Waiting for response...</div>
+    <div id="waiting">Please wait, processing...</div>
+</div>
+
+<script>
+    // Function to trigger the news process
+    function triggerNews() {
+        var responseElement = document.getElementById('response');
+        var waitingElement = document.getElementById('waiting');
+        responseElement.innerHTML = "Sending request...";
+        waitingElement.style.display = 'block';  // Show "Please wait" message
+
+        // Log before sending the request
+        console.log('Sending request to Webhook...');
+
+        // Send a request to n8n Webhook
+        fetch('<webhook>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'trigger_news' })
+        })
+        .then(response => {
+            // Check if response is ok
+            if (!response.ok) {
+                console.log('Failed to fetch:', response.statusText);
+                throw new Error("Network response was not ok");
+            }
+            return response.json();  // Parse the response as JSON
+        })
+        .then(data => {
+            // Log the data received
+            console.log('Received data:', data);
+
+            // Hide the waiting message
+            waitingElement.style.display = 'none';
+            
+            // Display the JSON response from n8n
+            if (data && data.message) {
+                responseElement.innerHTML = "Response from n8n: " + data.message;
+            } else {
+                responseElement.innerHTML = "No message received from n8n.";
+            }
+        })
+        .catch(error => {
+            // Hide the waiting message
+            waitingElement.style.display = 'none';
+            console.error('Error:', error);
+            responseElement.innerHTML = "Sorry, there was an error triggering the news process.";
+        });
+    }
+</script>
+
+</body>
+</html>
