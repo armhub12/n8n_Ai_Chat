@@ -7,4 +7,4 @@ change url ollama in llm model
 
 news feed api by alientvault to LLM send chat Discord
 
-<img src="https://img2.pic.in.th/pic/96d433e556e5489191f9e91520c24f15.png" alt="ๅ" border="0">
+<img src="https://img2.pic.in.th/pic/1ffe7a34458c41226.png" alt="1" border="0">
