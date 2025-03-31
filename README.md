@@ -28,7 +28,7 @@ mac & linux
 windows
 use powershell
 
-> $env:OLLAMA_HOST="<IP Address>"
+> $env:OLLAMA_HOST="<"IP Address">" \
 > ollama serve
 
 allow firewall everyone use
