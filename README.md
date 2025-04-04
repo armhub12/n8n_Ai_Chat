@@ -36,9 +36,9 @@ allow firewall everyone use
 > New-NetFirewallRule -DisplayName "Allow Ollama" -Direction Inbound -Protocol TCP -LocalPort 11434 -Action Allow
 
 powershell n8n public IP
->docker run -it --rm `
->  -p 5678:5678 `
-> -e N8N_HOST=0.0.0.0 `
->-e N8N_PORT=5678 `
->-e N8N_PROTOCOL=http `
->n8nio/n8n
+ docker run -it --rm `
+>>   -p 5678:5678 `
+>>   -e N8N_HOST=0.0.0.0 `
+>>   -e N8N_PORT=5678 `
+>>   -e N8N_PROTOCOL=http `
+>>   n8nio/n8n
